@@ -1,15 +1,22 @@
-# ใช้ nightly image ที่รองรับ edition 2024
-FROM rustlang/rust:nightly-slim as builder
-
+# 🛠 Build stage
+FROM rust:slim as builder
 WORKDIR /app
 COPY . .
-RUN cargo build --release
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* && \
+    cargo build --release
 
-# Runtime stage
-FROM debian:bullseye-slim
+# 🧼 Runtime stage: ใช้ image ที่เล็กมาก
+FROM debian:bookworm-slim
 WORKDIR /app
-COPY --from=builder /app/target/release/your-app-name /usr/local/bin/app
+
+# Update and install security patches and remove unnecessary packages
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get dist-upgrade -y && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/target/release/rust-microservice /usr/local/bin/app
 COPY public ./public
-COPY db ./db
 EXPOSE 3000
 CMD ["app"]
