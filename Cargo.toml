@@ -1,0 +1,13 @@
+[package]
+name = "rust-microservice"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.8.4"
+tokio = { version = "1.37", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+hyper = "1.6.0"
+hyper-util = { version = "0.1.3", features = ["tokio"] } # 👈 จำเป็น
+tower-http = { version = "0.6.6", features = ["fs"] }
